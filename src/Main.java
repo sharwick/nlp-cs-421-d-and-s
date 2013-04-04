@@ -6,7 +6,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		ImportData id = new ImportData();
-		id.PrintData();		
+		id.PrintData();
+		id.PrintScores();
 	}
 
 }
