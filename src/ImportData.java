@@ -1,6 +1,4 @@
 import java.io.*;
-import java.util.StringTokenizer;
-import java.util.*;
 
 public class ImportData {
 	
