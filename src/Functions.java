@@ -1,4 +1,7 @@
 
+import java.lang.Runtime;
+import java.io.*;
+
 public class Functions {
 
 	/**
@@ -25,6 +28,34 @@ public class Functions {
 		
 		return finalScore;
 		
+	}
+	
+	// Call POS tagger
+	// ./stanford-postagger.sh models/wsj-0-18-caseless-left3words-distsim.tagger ../essay-corpus/1.txt
+	public static String runPOSTagger(String filename) {
+		String command = "./stanford-postagger-full-2012-11-11/stanford-postagger.sh models/wsj-0-18-caseless-left3words-distsim.tagger ../essay-corpus/1.txt";
+		
+		command="./stanford-postagger-full-2012-11-11/stanford-postagger.sh models/wsj-0-18-caseless-left3words-distsim.tagger ../essay-corpus/1.txt";
+		String output=null;
+		
+		try {
+			Process p = Runtime.getRuntime().exec(command);
+			BufferedReader br = new BufferedReader( new InputStreamReader(p.getInputStream()));
+			output = br.toString();
+			
+			String line=null;
+			
+			int test=0;
+			while( (line=br.readLine()) != null) {
+				System.out.println(line);
+				
+				System.out.println("T"+ test++);
+			}
+			
+		} catch (IOException e) {
+			System.out.println("Error: " + e);
+		}
+		return output;
 	}
 	
 	

@@ -13,7 +13,8 @@ public class Main {
 		
 		// Test 3a
 		Test.testScore(id, col3a, "Part 3a");
-				
+		
+		Functions.runPOSTagger("./essay-corpus/1.txt");
 	}
 
 }

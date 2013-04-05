@@ -20,7 +20,7 @@ public class Test {
 			absDiff += Math.abs(Functions.Subscore3a(id.data[i]) - id.scores[i][col]);
 		}
 		
-		System.out.println("\n\nTotal absolute differene = " + absDiff);
+		System.out.println("\n\nTotal absolute difference = " + absDiff);
 	}
 
 }
