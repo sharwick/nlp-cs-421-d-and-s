@@ -1,6 +1,9 @@
 
 import java.lang.Runtime;
+import java.util.ArrayList;
 import java.io.*;
+
+import edu.stanford.nlp.ling.TaggedWord;
 
 public class Functions {
 
@@ -57,19 +60,60 @@ public class Functions {
 		}
 		return output;
 	}
+
+	
+	
+	/**
+	 * Subscore 1c: Verb tense / missing verb / extra verb
+	 * @param sentence
+	 * @return
+	 * @author Shannon Harwick
+	 */
+	public static float Subscore1c(Essay theEssay) {
+		float score=5;
+		float errors=0;  // each type of error will subtract a point
+		
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
+		
+		
+		
+		// OR:  5 - [# of errors]
+		
+		// Error 1: # of sentences with no verb
+		int error1=0;
+		for (int i=0; i<taggedWords.length; i++) {
+			int verbCount = 0;
+			
+			for (int j=0; j<taggedWords[i].size(); j++ ) {
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS == "VBZ")
+					verbCount++;
+			}
+			
+			if (verbCount==0)
+				error1++;
+			//String temp = taggedWords[i];
+		}
+		if (error1>0)
+			errors++;
+		
+		return Math.max(0, score-errors);
+	}	
 	
 	
 	/**
 	 * Subscore 3a: Sentence length
 	 * @param sentence
 	 * @return
+	 * @author Shannon Harwick 
 	 */
-	public static float Subscore3a(String sentence) {
+	public static float Subscore3a(Essay theEssay) {
 		float score=0;
+		String essayString = theEssay.getEssay();
 		
 		// Count number of delimiters: newline or period
-		for (int i=0; i<sentence.length(); i++) {
-			char current = sentence.charAt(i);
+		for (int i=0; i<essayString.length(); i++) {
+			char current = essayString.charAt(i);
 			if (current=='\n' || current=='.')
 				score++;
 		}

@@ -9,15 +9,33 @@ import edu.stanford.nlp.ling.TaggedWord;
 public class Essay {
 	
 	// data members
+	private String essay; // entire essay
 	private int sentenceCount; // total count of sentences
 	private ArrayList<String> sentenceList = new ArrayList<String>(); // list of sentences
 	private int score1a, score1b, score1c, score1d, score2a, score2b, score3a; // sub scores
 	private float scoreTotal; // total scores
+	private ArrayList<TaggedWord>[] taggedWords;
 	
-	private String essay; // entire essay
+
 	
 	// Default constructor
 	public Essay() {
+		ZeroScores();
+		essay=null;
+	}
+	
+	public Essay(String filename) {
+		ZeroScores();
+		essay = ImportData.ImportFile(filename);
+		
+		taggedWords = runPOSTagger(filename);
+		CalculateScores();
+	}
+	
+	/**
+	 * Set all scores to 0
+	 */
+	public void ZeroScores() {
 		sentenceCount = 0;
 		score1a = 0;
 		score1b = 0;
@@ -33,7 +51,7 @@ public class Essay {
 	public int getSentenceCount() {
 		return sentenceCount;
 	}
-	public void setSentenceCount(int count) {
+	private void setSentenceCount(int count) {
 		this.sentenceCount = count;
 	}
 	// =======================================================================
@@ -60,25 +78,25 @@ public class Essay {
 	public int get3a() {
 		return score3a;
 	}
-	public void set1a(int score) {
+	private void set1a(int score) {
 		this.score1a = score;
 	}
-	public void set1b(int score) {
+	private void set1b(int score) {
 		this.score1b = score;
 	}
-	public void set1c(int score) {
+	private void set1c(int score) {
 		this.score1c = score;
 	}
-	public void set1d(int score) {
+	private void set1d(int score) {
 		this.score1d = score;
 	}
-	public void set2a(int score) {
+	private void set2a(int score) {
 		this.score2a = score;
 	}
-	public void set2b(int score) {
+	private void set2b(int score) {
 		this.score2b = score;
 	}
-	public void set3a(int score) {
+	private void set3a(int score) {
 		this.score3a = score;
 	}
 	// =======================================================================
@@ -87,10 +105,21 @@ public class Essay {
 	public float getScoreTotal() {
 		return scoreTotal;
 	}
-	public void setScoreTotal(int score) {
+	private void setScoreTotal(int score) {
 		this.scoreTotal = score;
 	}
 	// ========================================================================
+	
+	// getter/setter other=================================
+		public ArrayList<TaggedWord>[] getTaggedWords() {
+			return taggedWords;
+		}
+		
+		// ========================================================================
+		
+	
+	
+	
 	
 	// toString method
 	@Override
@@ -102,7 +131,7 @@ public class Essay {
 	public String getSentence(int i) {
 		return sentenceList.get(i);
 	}
-	public void setSentence(int i, String s) {
+	private void setSentence(int i, String s) {
 		sentenceList.set(i, s);
 	}
 	// ===========================================================================
@@ -111,7 +140,7 @@ public class Essay {
 	public String getEssay() {
 		return essay;
 	}
-	public void setEssay(String s) {
+	private void setEssay(String s) {
 		essay = s;
 	}
 	// ==========================================================================
@@ -125,10 +154,10 @@ public class Essay {
 	}
 
 	// increment or decrement sentence count
-	public void incrementSentenceCount() {
+	private void incrementSentenceCount() {
 		sentenceCount++;
 	}
-	public void decrementSentenceCount() {
+	private void decrementSentenceCount() {
 		sentenceCount--;
 	}
 	
@@ -156,14 +185,14 @@ public class Essay {
 		
 		
 		// read in file
-		Scanner scan = new Scanner(new File("./essay-corpus/1.txt"));
+		Scanner scan = new Scanner(essay);
 		ArrayList<String> list = new ArrayList<String>();
 		while (scan.hasNextLine()){
 			String s = scan.nextLine();
 		    list.add(s);
 		}
 		scan.close();
-
+		 
 		// list contains all lines of file
 		
 		// write out each line to a separate file
@@ -218,6 +247,23 @@ public class Essay {
 	}
 	
 	
+	
+	
+	private ArrayList<TaggedWord>[] runPOSTagger(String filename) {
+		String model = "./stanford-postagger-full-2012-11-11/models/wsj-0-18-left3words.tagger";
+		ArrayList<TaggedWord>[] output = Tagger.RunTagger(model, filename);
+		return output;
+	}
+	
+	
+	// ==========================================================================
+	// Calculate scores
+	private void CalculateScores() {
+		
+		// Fill in other scores as they are available
+		this.set1c((int) Functions.Subscore1c(this));
+		this.set3a((int) Functions.Subscore3a(this));
+	}
 	
 	
 	
