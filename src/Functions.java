@@ -75,18 +75,16 @@ public class Functions {
 		
 		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
 		
+		//  5 - [# of errors]
 		
-		
-		// OR:  5 - [# of errors]
-		
-		// Error 1: # of sentences with no verb
+		// Error 1: # of sentences with no verb (can lose up to 2 points)
 		int error1=0;
 		for (int i=0; i<taggedWords.length; i++) {
 			int verbCount = 0;
 			
 			for (int j=0; j<taggedWords[i].size(); j++ ) {
 				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
-				if (POS == "VBZ")
+				if (POS.charAt(0) == 'V')
 					verbCount++;
 			}
 			
@@ -95,7 +93,27 @@ public class Functions {
 			//String temp = taggedWords[i];
 		}
 		if (error1>0)
+			errors+= Math.min(error1, 2);
+		
+		// Error 2: Incorrect use of ING - lose point if preceded by noun or pronoun
+		int error2=0;
+		
+		for (int i=0; i<taggedWords.length; i++) {
+			
+			for (int j=1; j<taggedWords[i].size(); j++ ) {
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				String POSprev = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+				
+				if (POS.equals("VBG") && (POSprev.equals("NN") || POSprev.equals("NNP") || POSprev.equals("PRP"))) 
+					error2++;
+			}
+			
+		}
+		if (error2>0)
 			errors++;
+		
+		
+		
 		
 		return Math.max(0, score-errors);
 	}	

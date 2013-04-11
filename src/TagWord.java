@@ -10,6 +10,7 @@ public class TagWord {
 	 */
 	public static String getWord(String s) {
 		ArrayList<Character> chars = new ArrayList<Character>();
+		String output="";
 		char c = 'a';
 		int i = 0;
 		while (c != '/') {
@@ -17,13 +18,16 @@ public class TagWord {
 			c = s.charAt(i);
 			if (c != '/') {
 				chars.add(c);
+				output+=c;
+
 				i++;
 			}
 			else {
 				break;
 			}
 		}
-		return chars.toString();
+		//return chars.toString();
+		return output;
 	}
 	
 	/*
@@ -32,6 +36,7 @@ public class TagWord {
 	public static String getPOS(String s) {
 		int limit = s.length();
 		int start = s.indexOf("/") + 1;
+		String output="";
 		
 		ArrayList<Character> chars = new ArrayList<Character>();
 		char c = 'a';
@@ -39,7 +44,9 @@ public class TagWord {
 		for  (int i = start; i < limit; i++) {
 			c = s.charAt(i);
 			chars.add(c);
+			output+=c;
 		}
-		return chars.toString();
+		//return chars.toString();
+		return output;
 	}
 }
