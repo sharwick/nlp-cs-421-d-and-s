@@ -3,7 +3,7 @@ public class Test {
 	
 	
 	public static void testScore(Essay[] essays, int col, String title, float[][] scores) {
-		int absDiff=0;
+		int absDiff=0,sumDiff=0;
 		
 		System.out.print("\n\n" + title.toUpperCase() + ":");
 		System.out.print("\nN\t");
@@ -20,9 +20,11 @@ public class Test {
 			System.out.print(scores[i][col]);
 			
 			absDiff += Math.abs(calcScore - scores[i][col]);
+			sumDiff += calcScore - scores[i][col];
 		}
 		
 		System.out.println("\n\nTotal absolute difference = " + absDiff);
+		System.out.println("\n\nTotal summed difference = " + sumDiff);
 	}
 
 }

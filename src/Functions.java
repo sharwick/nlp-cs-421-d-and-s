@@ -77,7 +77,7 @@ public class Functions {
 		
 		//  5 - [# of errors]
 		
-		// Error 1: # of sentences with no verb (can lose up to 2 points)
+		// Error 1: # of sentences with no verb (can lose up to 3 points)
 		int error1=0;
 		for (int i=0; i<taggedWords.length; i++) {
 			int verbCount = 0;
@@ -93,9 +93,9 @@ public class Functions {
 			//String temp = taggedWords[i];
 		}
 		if (error1>0)
-			errors+= Math.min(error1, 2);
+			errors+= Math.min(error1, 3);
 		
-		// Error 2: Incorrect use of ING - lose point if preceded by noun or pronoun
+		// Error 2: Incorrect use of ING - lose point if preceded by noun or pronoun (up to 2 points)
 		int error2=0;
 		
 		for (int i=0; i<taggedWords.length; i++) {
@@ -110,12 +110,75 @@ public class Functions {
 			
 		}
 		if (error2>0)
+			errors+= Math.min(error2, 2);
+		
+		// Error 3: Missing auxiliary - no 'do' before 'not'
+		int error3=0;
+		
+		for (int i=0; i<taggedWords.length; i++) {
+			
+			for (int j=1; j<taggedWords[i].size(); j++ ) {
+				String word = TagWord.getWord(taggedWords[i].get(j).toString());
+				String POSprev = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+				
+				if (word.equals("not") && (POSprev.charAt(0)!='V')) 
+					error3++;
+			}
+			
+		}
+		if (error3>0)
 			errors++;
 		
+		// Random errors: (i) VBP+VBN
+				int error4=0, error5=0, error6=0, error7=0, error8=0;
+				
+				for (int i=0; i<taggedWords.length; i++) {
+					
+					for (int j=1; j<taggedWords[i].size(); j++ ) {
+						String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+						String POSprev = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+						String word = TagWord.getWord(taggedWords[i].get(j).toString());
+						String wordprev = TagWord.getWord(taggedWords[i].get(j-1).toString());
+						
+						// (i) VBP+VBN
+						if (POS.equals("VBN") && (POSprev.equals("VBP"))) 
+							error4++;
+						
+						// (ii) VBP + VB!G - e.g., AM HAVE
+						if (POS.charAt(0)=='V' && !POS.equals("VBG") && (POSprev.equals("VBP"))) 
+							error5++;
+						
+						// (iii) BECAUSE + IS
+						if (wordprev.toUpperCase().equals("BECAUSE") && POS.equals("VBZ")) 
+							error6++;
+						// (iv) IN + NN
+						if (POS.equals("NN") && POSprev.equals("IN")) 
+							error7++;
+						// (v) TO + VBG
+						if (POS.equals("NN") && POSprev.equals("TO")) 
+							error8++;
+						// (vi) IN + VB!G
+						if (POS.charAt(0)=='V' && !POS.equals("VBP") && POSprev.equals("IN")) 
+							error8++;
+						// (vii) VBP + VBD (I'm came)
+						if (POS.equals("VBD") && POSprev.equals("VBP")) 
+							error8++;
+					}
+					
+				}
+				if (error4>0)
+					errors++;
+				if (error5>0)
+					errors++;
+				if (error6>0)
+					errors++;
+				if (error7>0)
+					errors++;
+				if (error8>0)
+					errors++;
 		
 		
-		
-		return Math.max(0, score-errors);
+		return Math.max(1, score-errors);
 	}	
 	
 	
