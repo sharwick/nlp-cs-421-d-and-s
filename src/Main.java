@@ -30,7 +30,8 @@ public class Main {
 		
 		// Test 3a
 		//Test.testScore(essays, col3a, "Part 3a", scores);
-		Test.testScore(essays, col1c, "Part 1c", scores);
+		//Test.testScore(essays, col1c, "Part 1c", scores);
+		Test.testScore(essays, col1d, "Part 1d", scores);
 		
 		
 		// Running POS tagger: returns an array of arrayLists.  
@@ -56,10 +57,11 @@ public class Main {
 
 		// TEST Essay
 		System.out.println("\n\nTEST ESSAY: \n");
-		Essay essay1 = new Essay("./essay-corpus/1.txt");
+		Essay essay1 = new Essay("./essay-corpus/19.txt");
 		System.out.println("\n\n" + essay1.getEssay());
 		System.out.println("\nScore 3a = " + essay1.get3a());
 		System.out.println("\nScore 1c = " + essay1.get1c());
+		System.out.println("\nScore 1d = " + essay1.get1d());
 	}
 
 }

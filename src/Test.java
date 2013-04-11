@@ -13,7 +13,7 @@ public class Test {
 		
 		// Preliminary technique: Count number of newlines and periods
 		for (int i=0; i<20; i++) {
-			float calcScore = Functions.Subscore1c(essays[i]);
+			float calcScore = Functions.Subscore1d(essays[i]);
 			
 			System.out.print("\n" + (i+1) + "\t");
 			System.out.print(calcScore + "\t");

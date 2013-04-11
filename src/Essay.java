@@ -262,6 +262,7 @@ public class Essay {
 		
 		// Fill in other scores as they are available
 		this.set1c((int) Functions.Subscore1c(this));
+		this.set1d((int) Functions.Subscore1d(this));
 		this.set3a((int) Functions.Subscore3a(this));
 	}
 	

@@ -129,7 +129,7 @@ public class Functions {
 		if (error3>0)
 			errors++;
 		
-		// Random errors: (i) VBP+VBN
+		// Various errors: 
 				int error4=0, error5=0, error6=0, error7=0, error8=0;
 				
 				for (int i=0; i<taggedWords.length; i++) {
@@ -180,6 +180,103 @@ public class Functions {
 		
 		return Math.max(1, score-errors);
 	}	
+	
+
+	
+
+	
+	/**
+	 * Subscore 1d: Sentence formation
+	 * @param theEssay	An Essay object
+	 * @return
+	 * @author Shannon Harwick
+	 */
+	public static float Subscore1d(Essay theEssay) {
+		float score=5;
+		float errors=0;  // each type of error will subtract a point
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();	
+	
+
+		// Various errors: 
+				int error1=0, error2=0, error3=0,error4=0, error5=0;
+				
+				for (int i=0; i<taggedWords.length; i++) {
+					// If only one long sentence is created, essay gets a 1 if the sentence was ended with EOS and 0 otherwise.
+					if (taggedWords.length==1) {
+						errors=5;
+						
+						// Check if author used EOS character; if so, then give 1 point.
+						TaggedWord lastTW=taggedWords[0].get(taggedWords[0].size()-1);
+						if ( TagWord.getPOS(lastTW.toString()).equals("."))
+							errors--;
+						
+						break;
+					}
+					
+					int subjectCount=0;
+					int verbCount=0;
+					
+					for (int j=2; j<taggedWords[i].size(); j++ ) {
+						String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+						String POSprev = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+						String POSprevprev = TagWord.getPOS(taggedWords[i].get(j-2).toString());
+						String word = TagWord.getWord(taggedWords[i].get(j).toString());
+						String wordprev = TagWord.getWord(taggedWords[i].get(j-1).toString());
+						String wordprevprev = TagWord.getWord(taggedWords[i].get(j-2).toString());
+						
+						// (i) Missing possessive: "my son name" (PRP$+NN+NN)
+						if (POSprevprev.equals("PRP$") && (POSprev.equals("NN")) && (POS.equals("NN"))) 
+							error1++;
+						
+						// (ii) PRP$+JJ+IN (or maybe any adjective not touched by a noun or to-be verb or followed by another JJ or a conjunction CC): MY LIVE IN CHICAGO
+						if ((POSprev.equals("JJ")) && !( POS.charAt(0)=='N' || POSprevprev.charAt(0)=='N' || POSprevprev.charAt(0)=='V'||POS.equals("JJ") || POSprevprev.equals("JJ") || POS.equals("CC") || POSprevprev.equals("CC"))) {
+							// Special exception for "1 year old" or "32 years old"
+							if (wordprev.toLowerCase().equals("old") && (wordprevprev.toLowerCase().equals("year") || wordprevprev.toLowerCase().equals("years") ) )
+								;
+							else
+								error2++;
+						}
+						
+						// (iii) Sentence has a Noun or PRP and a verb
+						if (POSprevprev.charAt(0)=='N' || POSprevprev.equals("PRP") || POS.charAt(0)=='N' || POS.equals("PRP")) 
+							subjectCount++;
+						if ((POSprevprev.charAt(0)=='V' && !POSprevprev.equals("VBG")) || (POS.charAt(0)=='V' && !POS.equals("VBG")))
+							verbCount++;
+						
+						// (iv) DT + !(NOUN or JJ or #)
+						if (POSprevprev.equals("DT") && !(POSprev.charAt(0)=='N' || POSprev.charAt(0)=='J' || wordprev.equals("CD"))) 
+							error4++;
+						
+						// (v) "an Mexico"
+						String first = wordprev.toUpperCase().substring(0, 1);
+						if (wordprevprev.toUpperCase().equals("AN") && !first.matches("[AEIOU]")) {
+							error5++;
+						}
+						
+						first = word.toUpperCase().substring(0, 1);
+						if (wordprev.toUpperCase().equals("AN") && !first.matches("[AEIOU]")) {  
+							error5++;
+						}
+					}
+					
+					if (subjectCount*verbCount==0)
+						error3++;
+					
+				}
+				if (error1>0)
+					errors++;
+				if (error2>0)
+					errors++;
+				if (error3>0)
+					errors++;
+				if (error4>0)
+					errors++;
+				if (error5>0)
+					errors++;
+		
+		return Math.max(0, score-errors);
+	}
+	
 	
 	
 	/**
