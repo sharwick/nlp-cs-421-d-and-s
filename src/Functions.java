@@ -61,8 +61,358 @@ public class Functions {
 		return output;
 	}
 
+	/**
+	 * Subscore 1a: word order
+	 * @param Essay
+	 * @return float
+	 * @author Dave
+	 */
+	public static float Subscore1a(Essay theEssay) {
+		
+		float score = 5;
+		
+		// obtain array of tagged words from essay
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
+		
+		// taggedWords[0].toString() -> [My/PRP$, sister/NN, live/VBP, in/IN, the/DT, U.S./NNP, ...
+		// taggedWords[0].get(0).toString() -> My/PRP$
+		
+		// We will check for the following errors
+		int error1 = 0; // verb found at beginning of sentence
+		int error2 = 0; // adj must precede a noun
+		int error3 = 0; // verb verb found consecutively
+		int error4 = 0; // cannot have IN VB consecutively
+		int error5 = 0; // adverb must follow verb
+		int error6 = 0; // verb at end of sentence
+		int error7 = 0; // IN/CD at beginning of sentence
+		int error8 = 0; // NN NN found consecutively
+		
+		// check error1
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS.charAt(0) == 'V') { // verb found
+					if (j == 0) {
+						error1++;
+					}
+					else {
+						
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+						if (POS2.charAt(0) == '.') {
+							error1++;
+						}
+					}
+				}
+			}
+		}
+		
+		if (error1 > 0) {
+			score -= 1;
+		}
+		
+		// check error2
+		for (int i = 0; i < taggedWords.length; ++i) {	
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if (POS.charAt(0) == 'J') { // adjective found
+					
+					if ((j+1) < taggedWords[i].size()) {
+						
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j+1).toString());
+						
+						if(POS2.charAt(0) != 'N') {
+							//++error2;
+						}
+					}
+				}
+			}
+		}
+		
+		if (error2 > 0) {
+			score -= 1;
+		}
+		
+		// check error3
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS.charAt(0) == 'V') { // verb found
+					
+					if (j != 0) {
+						
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j-1).toString());
+						
+						if (POS2.charAt(0) == 'V') {
+							error3++;
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		if (error3 > 0) {
+			score -= 1;
+		}
+		
+		// check error 4 
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS.charAt(0) == 'V') { // verb found
+					
+					if (j != 0) {
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j - 1).toString());
+						
+						if (POS2.charAt(0) == 'I') {
+							++error4;
+						}
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		for (int i = 0; i < error4; ++i) {
+			score -= 1;
+		}
+		
+		// check error5
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+		
+				if (POS.charAt(0) == 'R') { // adverb found
+					
+					if ((j+1) < taggedWords[i].size()) {
+						
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j+1).toString());
+						
+						if(POS2.charAt(0) != 'V') {
+							//++error5;
+						}
+						
+					}
+					
+				}
+					
+			
+			}
+			
+		}
+		if (error5 > 0) {
+			score -= 1;
+		}
+			
+		// error6
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS.charAt(0) == 'V') { // verb found
+					
+					if (j == (taggedWords[i].size() - 1)) {
+						error6++;
+					}
+				}
+			}
+		}
+		for (int i = 0; i < error6; ++i) {
+			score -= 1;
+		}
+		
+		// error7
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				if (POS.equals("IN") || POS.equals("CD")) {
+					if (j == 0 || (j == taggedWords[i].size() - 1)) {
+						error7++;
+					}
+				}
+			}
+		}
+		for (int i = 0; i < error7; ++i) {
+			score -= 1;
+		}
+		
+		// error8
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if (POS.equals("NN")) {
+					if ((j+1) < taggedWords[i].size()) {
+						String POS2 = TagWord.getPOS(taggedWords[i].get(j+1).toString());
+						
+						if (POS2.equals("NN")) {
+							++error8;
+						}
+					}
+				}
+
+			}
+		}
+		for (int i = 0; i < error8; ++i) {
+			score -= 1;
+		}
+		
+		return Math.max(0, score);
+	}
 	
-	
+	/**
+	 * Subscore 1b: Subject-verb agreement
+	 * @param Essay
+	 * @return float
+	 * @author Dave
+	 */
+	public static float Subscore1b(Essay theEssay) {
+		
+		float score = 5;
+		
+		// obtain array of tagged words from essay
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
+		
+		// count errors
+		int errorCount = 0;
+		
+		boolean multipleSubjects = false;
+		
+		// check for to be verb errors (specifically if the subject is plural with AND, then check for singular verb errors)
+		// Mike AND John is here (error)
+		for (int i = 0; i < taggedWords.length; i++) {
+			multipleSubjects = false;
+			
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				// and is encountered as subject
+				String word = TagWord.getWord(taggedWords[i].get(j).toString());
+				
+				if (word.equals("and")) {
+					multipleSubjects = true;
+				}
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if (POS.charAt(0) == 'V') {
+					
+					String word2 = TagWord.getWord(taggedWords[i].get(j).toString());
+					
+					// the following is singular 
+					if (POS.equals("VBZ") || word2.equals("live") || word2.equals("is") ||  word2.equals("am") || word2.charAt(word.length() - 1) == 's') {
+						
+						if (multipleSubjects) {
+							++errorCount;
+						}	
+					}
+					
+					multipleSubjects = false;
+				}
+			}
+		}
+		
+		// other verb agreement (i.e. Error: We likes ...)
+		// check for a plural subject (and I) and look for error where following verb has 's' at the end
+		// Different than first error checking because not looking for AND keyword in subject here
+		for (int i = 0; i < taggedWords.length; ++i) {
+		
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String word = TagWord.getWord(taggedWords[i].get(j).toString());
+				
+				// plural words and "I"
+				if (word.equals("We") || word.equals("They") || word.equals("we") || word.equals("they") || word.equals("I")) {
+					
+					if ((j+1) < taggedWords[i].size()) {
+						
+						String POS = TagWord.getPOS(taggedWords[i].get(j + 1).toString());
+						
+						// Verb found
+						if (POS.equals("VBZ")) {
+							++errorCount;
+						}
+					}
+				}	
+			}
+		}
+		
+		// check for this error
+		// I am(VBP) came(VBD)
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if ((j+1) < taggedWords[i].size()) {
+					String POS2 = TagWord.getPOS(taggedWords[i].get(j + 1).toString());
+					
+					if (POS.equals("VBP") && POS2.equals("VBD")) {
+						errorCount++;
+					}
+				}
+			}
+		}
+		
+		// now check for no verbs present at all in sentence
+		for (int i = 0; i < taggedWords.length; ++i) {
+			boolean getVerb = false;
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if (POS.charAt(0) == 'V') {
+					getVerb = true;
+				}	
+			}
+			if (!getVerb) {
+				errorCount++;
+			}
+		}
+		
+		// Try to resolve some errors from run ons
+		// Cannot have PRP JJ (i.e. She happy ...) because verb is not present
+		// Cannot have PRP IN (i.e. She in ...)
+		for (int i = 0; i < taggedWords.length; ++i) {
+			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				
+				if ((j+1) < taggedWords[i].size()) {
+					String POS2 = TagWord.getPOS(taggedWords[i].get(j + 1).toString());
+					
+					if ((POS.equals("PRP") && POS2.equals("JJ")) || (POS.equals("PRP") && POS2.equals("IN"))) {
+						errorCount++;
+					}
+				}
+			}
+		}
+		
+		score = 5 - errorCount;
+		
+		return Math.max(score, 0);
+	}
 	/**
 	 * Subscore 1c: Verb tense / missing verb / extra verb
 	 * @param sentence
@@ -181,10 +531,6 @@ public class Functions {
 		return Math.max(1, score-errors);
 	}	
 	
-
-	
-
-	
 	/**
 	 * Subscore 1d: Sentence formation
 	 * @param theEssay	An Essay object
@@ -195,7 +541,6 @@ public class Functions {
 		float score=5;
 		float errors=0;  // each type of error will subtract a point
 		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();	
-	
 
 		// Various errors: 
 				int error1=0, error2=0, error3=0,error4=0, error5=0;
@@ -276,8 +621,6 @@ public class Functions {
 		
 		return Math.max(0, score-errors);
 	}
-	
-	
 	
 	/**
 	 * Subscore 3a: Sentence length
