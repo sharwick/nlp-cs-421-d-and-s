@@ -15,6 +15,12 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
+		// Read file as args[2].  Compute and print scores.
+		Essay inEssay = new Essay(args[0]);
+		inEssay.printScores();
+		
+		
+		
 		// Create array of essay objects
 		int N_files = 20;
 		Essay[] essays = new Essay[N_files];
@@ -28,12 +34,15 @@ public class Main {
 		
 		int col1a=1, col1b=2, col1c=3, col1d=4, col2a=5, col2b=6, col3a = 7;
 		
+		
+		
 		// Test 3a
 		//Test.testScore(essays, col3a, "Part 3a", scores);
 		//Test.testScore(essays, col1c, "Part 1c", scores);
 		//Test.testScore(essays, col1d, "Part 1d", scores);
 		//Test.testScore(essays, col1a, "Part 1a", scores);
-		Test.testScore(essays, col1b, "Part 1b", scores);
+		//Test.testScore(essays, col1b, "Part 1b", scores);
+		Test.testScore(essays, col2b, "Part 2b", scores);
 		
 		// Running POS tagger: returns an array of arrayLists.  
 		//		Elements of the array are sentences
@@ -63,6 +72,7 @@ public class Main {
 //		System.out.println("\nScore 3a = " + essay1.get3a());
 //		System.out.println("\nScore 1c = " + essay1.get1c());
 //		System.out.println("\nScore 1d = " + essay1.get1d());
+//		System.out.println("\nScore 2b = " + essay1.get2b());
 	}
 
 }

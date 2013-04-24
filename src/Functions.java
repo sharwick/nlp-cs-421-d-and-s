@@ -1,9 +1,11 @@
 
 import java.lang.Runtime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.*;
 
 import edu.stanford.nlp.ling.TaggedWord;
+import java.util.Arrays.*;
 
 public class Functions {
 
@@ -621,6 +623,117 @@ public class Functions {
 		
 		return Math.max(0, score-errors);
 	}
+	
+	/**
+	 * PART 2A TO BE COMPLETED
+	 * @param theEssay
+	 * @return
+	 */
+	public static float Subscore2a(Essay theEssay) {
+		float score=3;
+		return score;
+	}
+
+
+	/**
+	 * I don't base subscore 2b on family as is suggested in the instructions
+	 * because I don't think family is a necessary or sufficient topic for an 
+	 * autobiography.  Furthermore, an essay could be entirely about the authors
+	 * family rather than him/herself.  That essay should get a 0.
+	 * 
+	 * I also strongly disagree with many of the score assignments that were given
+	 * to the essays for this category.  For example, I don't feel essay 4 should get
+	 * full points.  It is a short essay that is more about the author's family than
+	 * the author.  If essay 14 gets a 1, so should essay 4.
+	 * 
+	 * Factors Considered: number of personal pronouns, percentage of words that are
+	 * personal pronouns, how many times "I" is used, whether or not past tense is used 
+	 * (for past tense, I also include "from" since that can indicate someone saying 
+	 * where he's from).
+	 * 
+	 * PART 2B TO BE COMPLETED
+	 * @param theEssay
+	 * @return
+	 */
+	public static float Subscore2b(Essay theEssay) {
+		
+		float score=5;
+		int errors=0;
+		
+
+		// Count the number of personal pronouns: I, me, my, we, us, our, ours, mine
+		String meWords="i,me,my,we,us,our,ours,mine";
+		String[] meWordsArray = meWords.split(",");
+		int NmeWords=0;
+		int ratioOfMeWords=0;
+		int iCount=0;
+		int pastCount=0;
+		
+		String essay = theEssay.getEssay();
+		essay = essay.replace("."," ");
+		essay = essay.replace(","," ");
+		essay = essay.replace("\n"," ");
+		essay = essay.replace("  "," ");
+		essay = essay.toLowerCase();
+		String[] words = essay.split(" ");
+		Arrays.sort(words);
+		Arrays.sort(meWordsArray);
+		
+		for (int i=0; i<words.length; i++) {
+			if ( java.util.Arrays.binarySearch(meWordsArray,words[i].toLowerCase())>=0)
+				NmeWords++;
+			if (words[i].equals("i"))
+				iCount++;
+		}
+		if (words.length>0) 
+			ratioOfMeWords = (int) Math.round( ( (float) NmeWords) /words.length*5.0*10.0);
+		
+		if (ratioOfMeWords<0.1)
+			errors++;
+		
+		// Compute percentage of total number of words.  If >10%, give 6.  Otherwise scale down.
+		
+		// Deduct a point if there are fewer than 6 me words and another if fewer than 3.
+		if (NmeWords<6)
+			errors++;
+		if (NmeWords<3)
+			errors++;
+		
+		// If fewer than 3 instances of "I", deduct a point.
+		if (iCount<3)
+			errors++;
+		
+		// If no past tense is used (i.e., no history), deduct 1 point
+		
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
+		
+		for (int i=0; i<taggedWords.length; i++) {
+			for (int j=0; j<taggedWords[i].size(); j++) {
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				String word = TagWord.getWord(taggedWords[i].get(j).toString());
+				
+				if (POS.equals("VBD"))
+					pastCount++;
+				if (word.toLowerCase().equals("from"))
+					pastCount++;
+			}
+		}
+		if (pastCount==0)
+			errors++;
+		
+		score = 5-errors;
+		
+		/*
+		// TESTING:
+		System.out.println("\n\nWords: ");
+		for (int j=0; j<words.length; j++) 
+			System.out.println(words[j]);
+		System.out.println("\nNmeWords: " + NmeWords + " and Nwords: " + words.length);
+		*/
+		
+		return score;
+	}
+	
 	
 	/**
 	 * Subscore 3a: Sentence length

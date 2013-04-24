@@ -171,6 +171,10 @@ public class Essay {
 		scoreTotal = rounded;
 	}
 	
+	public void printScores() {
+		System.out.println(score1a + " " +  score1b + " " + score1c+ " " + score1d+ " " + score2a+ " " +score2b+ " " + score3a + " " + this.scoreTotal);
+	}
+	
 	// clear arraylist of sentences
 	public void clearSentenceList() {
 		sentenceList.clear();
@@ -261,9 +265,14 @@ public class Essay {
 	private void CalculateScores() {
 		
 		// Fill in other scores as they are available
+		this.set1a((int) Functions.Subscore1a(this));
+		this.set1b((int) Functions.Subscore1b(this));
 		this.set1c((int) Functions.Subscore1c(this));
 		this.set1d((int) Functions.Subscore1d(this));
+		this.set2a((int) Functions.Subscore2a(this));
+		this.set2b((int) Functions.Subscore2b(this));
 		this.set3a((int) Functions.Subscore3a(this));
+		calculateTotal();
 	}
 	
 	
