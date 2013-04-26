@@ -14,13 +14,63 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+		/*
 		// Read file as args[2].  Compute and print scores.
 		Essay inEssay = new Essay(args[0]);
 		inEssay.printScores();
+		*/
+		
+		// Official submission specs: 
+		// 1) read in a directory
+		// 2) obtain scores for all essays in directory
+		// 3) Write all scores for each file to a single output.txt file
+		// 4) essays are delimited by lines
+		// 5) subscores are delimited by commas
+		
+		// Obtain directory
+		File directory = new File(args[0]);
+		
+		// Overwrite output file
+		File outputFile = new File("output.txt");
+		outputFile.delete();
 		
 		
+		// Sort list of files alphabetically
+		File[] fileList = directory.listFiles();
+		Arrays.sort(fileList);
 		
+		int firstFile=1; //flag
+		
+		// For each file in a directory, analyze essay and output score to output file
+		for (File file: fileList) {
+			if (file.isDirectory()) {
+				// do nothing
+			} else {
+				// Run analysis on file
+				Essay inEssay = new Essay(args[0]+'/'+file.getName());
+				
+				// Output results
+				try {				
+				FileWriter fstream = new FileWriter(outputFile, true);
+				BufferedWriter out = new BufferedWriter(fstream);
+				
+				if (firstFile==1) {
+					firstFile--;
+				} else {
+					out.append("\n");
+				}
+				
+				out.append(inEssay.returnScores());
+				//out.append(","+file.getName()); // Uncomment to add filename at end
+				out.close();
+				} catch (Exception e) {
+					System.err.println("\nError writing to file: " + file.getName());
+				}
+			}
+			
+		}
+		
+		/*
 		// Create array of essay objects
 		int N_files = 20;
 		Essay[] essays = new Essay[N_files];
@@ -34,7 +84,7 @@ public class Main {
 		
 		int col1a=1, col1b=2, col1c=3, col1d=4, col2a=5, col2b=6, col3a = 7;
 		
-		
+		*/
 		
 		// Test 3a
 		//Test.testScore(essays, col3a, "Part 3a", scores);
@@ -42,7 +92,7 @@ public class Main {
 		//Test.testScore(essays, col1d, "Part 1d", scores);
 		//Test.testScore(essays, col1a, "Part 1a", scores);
 		//Test.testScore(essays, col1b, "Part 1b", scores);
-		Test.testScore(essays, col2b, "Part 2b", scores);
+		//Test.testScore(essays, col2b, "Part 2b", scores);
 		
 		// Running POS tagger: returns an array of arrayLists.  
 		//		Elements of the array are sentences

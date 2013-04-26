@@ -175,6 +175,10 @@ public class Essay {
 		System.out.println(score1a + " " +  score1b + " " + score1c+ " " + score1d+ " " + score2a+ " " +score2b+ " " + score3a + " " + this.scoreTotal);
 	}
 	
+	public String returnScores() {
+		return score1a + "," +  score1b + "," + score1c+ "," + score1d+ "," + score2a+ "," +score2b+ "," + score3a + "," + this.scoreTotal;
+	}
+	
 	// clear arraylist of sentences
 	public void clearSentenceList() {
 		sentenceList.clear();
