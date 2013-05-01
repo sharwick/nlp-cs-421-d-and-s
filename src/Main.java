@@ -7,6 +7,7 @@ import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
+import edu.stanford.nlp.trees.*;
 
 public class Main {
 
@@ -19,6 +20,23 @@ public class Main {
 		Essay inEssay = new Essay(args[0]);
 		inEssay.printScores();
 		*/
+		
+		// TEST parser
+		/*
+		Essay testEssay = new Essay("test_essay.txt");
+		Tree t = Parser.runParser(testEssay.getEssay());
+		System.out.println(t.getLeaves().get(0).toString());
+		System.out.println(t.getChild(0).toString());
+		System.out.println(t.label().value());
+		System.out.println(t.getChild(0).label().value());
+		*/
+		/*
+		int[] results = recursiveCheck(t);
+		System.out.println("X: " + results[0] + "\nFRAG: " + results[1]);
+		*/
+		
+// ANALYSIS		
+if (false) {
 		
 		// Official submission specs: 
 		// 1) read in a directory
@@ -69,8 +87,10 @@ public class Main {
 			}
 			
 		}
+}	
 		
-		/*
+// TESTING
+if (true) {
 		// Create array of essay objects
 		int N_files = 20;
 		Essay[] essays = new Essay[N_files];
@@ -79,17 +99,17 @@ public class Main {
 			essays[i-1] = new Essay("./essay-corpus/" + i + ".txt");
 		}
 		
-		float[][] scores = ImportData.ImportScores("./essay-corpus/grades.txt", N_files);
+		float[][] scores = ImportData.ImportScores("grades.txt", N_files);
 		
 		
 		int col1a=1, col1b=2, col1c=3, col1d=4, col2a=5, col2b=6, col3a = 7;
 		
-		*/
+		
 		
 		// Test 3a
 		//Test.testScore(essays, col3a, "Part 3a", scores);
 		//Test.testScore(essays, col1c, "Part 1c", scores);
-		//Test.testScore(essays, col1d, "Part 1d", scores);
+		Test.testScore(essays, col1d, "Part 1d", scores);
 		//Test.testScore(essays, col1a, "Part 1a", scores);
 		//Test.testScore(essays, col1b, "Part 1b", scores);
 		//Test.testScore(essays, col2b, "Part 2b", scores);
@@ -124,5 +144,10 @@ public class Main {
 //		System.out.println("\nScore 1d = " + essay1.get1d());
 //		System.out.println("\nScore 2b = " + essay1.get2b());
 	}
-
 }
+
+	
+	
+}
+
+

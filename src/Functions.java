@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.io.*;
 
 import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.trees.Tree;
+
 import java.util.Arrays.*;
 
 public class Functions {
@@ -621,16 +623,161 @@ public class Functions {
 				if (error5>0)
 					errors++;
 		
+				
+				
+		// Check for errors detected using Parser
+			Tree t = Parser.runParser(theEssay.getEssay());
+			int[] resultsOfRecursiveCheck = recursiveCheck(t);
+			int errorParser1=0, errorParser2=0;
+			
+			// Unidentifiable phrases (X)
+			if (resultsOfRecursiveCheck[0]>0)
+				errorParser1++;
+			
+			// Sentence Fragments (FRAG)
+			if (resultsOfRecursiveCheck[1]>0)
+				errorParser2++;
+			//errors+= (errorParser1+errorParser2)*1;
+			errors = (float) Math.max(errors, 1*(errorParser1+errorParser2) ); // 1* -> 15/-5 for abs/summed;  1.5* -> 17/-8
+			
+				
 		return Math.max(0, score-errors);
 	}
 	
+
+	private static int[] recursiveCheck(Tree t) {
+		int[] toReturn = new int[2];
+		int countX = 0;
+		int countFRAG = 0;
+		
+		if (t != null) {
+			for (int k=0; k<t.numChildren(); k++) {
+				Tree tempTree = t.getChild(k);
+				if (tempTree.label().value().equals("X"))
+					countX++;
+				else if (tempTree.label().value().equals("FRAG"))
+					countFRAG++;
+				
+				int[] nextValues = recursiveCheck(tempTree);
+				countX+=nextValues[0];
+				countFRAG+=nextValues[1];
+			}
+		}
+		
+		toReturn[0] = countX;
+		toReturn[1] = countFRAG;
+		return toReturn;
+	}	
+	
 	/**
-	 * PART 2A TO BE COMPLETED
+	 * PART 2A 
+	 * 
+	 * For this subscore, the strategy is to:
+	 * 
+	 * 1) Collect all pronouns in array
+	 * 2) 	Give points for third person
+	 * 3) 	Penalize for second person
+	 * 4) 	Eliminate not third person
+	 * 5) For remaining array of pronouns, check for antecedents
+	 * 6) 	Adjust score depending on level of ambiguity of antecedents
+	 * 
+	 * Note that there are some differences between my calculated grades
+	 * and the actual grades because I do not agree with all of the human grades.
+	 * For instance, essay 5 follows coherence guidelines, yet the actual human
+	 * grade does not reflect this (it assigns a grade of 2). Under my judgment, 
+	 * this grade does not reflect the essays coherency. 
+	 * 
 	 * @param theEssay
-	 * @return
+	 * @return subscore
+	 * @author Dave
 	 */
 	public static float Subscore2a(Essay theEssay) {
-		float score=3;
+		
+		// starting score of 3; increment/decrement depending on coherence
+		float score = 3;
+		
+		// array list of pronouns
+		ArrayList<String> pronouns = new ArrayList<String>();
+		
+		// obtain array of tagged words from essay
+		ArrayList<TaggedWord>[] taggedWords = theEssay.getTaggedWords();
+		
+		int second = 0;
+		int third = 0;
+		
+		boolean male = false;
+		int antecedentCorrect = 0;
+		int antecedentWrong = 0;
+		
+		// obtain list of pronouns
+		for (int i = 0; i < taggedWords.length; i++) {			
+			for (int j = 0; j < taggedWords[i].size(); ++j) {
+				
+				String POS = TagWord.getPOS(taggedWords[i].get(j).toString());
+				String word = TagWord.getWord(taggedWords[i].get(j).toString());
+				
+				if (word.equalsIgnoreCase("son") || word.equals("husband")) {
+					male = true;
+				}
+				else if (word.equalsIgnoreCase("daughter") || word.equals("wife")) {
+					male = false;
+				}
+				
+				// give points for third person and add to array list
+				if (word.equalsIgnoreCase("he") || word.equalsIgnoreCase("she") || word.equals("they")) {
+					third++;
+					
+					// figure out nature (gender) of antecedent; i.e. if she is used then female entity should be introduced
+					if (word.equalsIgnoreCase("he") || word.equalsIgnoreCase("him") || word.equalsIgnoreCase("his")) {
+						if (!male) {
+							antecedentWrong++;
+						}
+						else {
+							antecedentCorrect++;
+						}
+					}
+					if (word.equalsIgnoreCase("she") || word.equalsIgnoreCase("her") || word.equalsIgnoreCase("hers")) {
+						if (!male) {
+							antecedentWrong++;
+						}
+						else {
+							antecedentCorrect++;
+						}
+					}
+				}
+				
+				// incorrect usage of second person in essay
+				else if(word.equalsIgnoreCase("you") || word.equalsIgnoreCase("your")) {
+					second++;
+				}
+							
+			}
+		}
+				
+		int positiveScore = third + antecedentCorrect;
+		int negativeScore = second + antecedentWrong;
+		
+		int compScore = positiveScore - negativeScore;
+		
+		if (compScore >= 2) {
+			score += 2;
+		}
+		else if (compScore == 1) {
+			score += 1;
+		}
+		else if (compScore == -1) {
+			score -= 1;
+		}
+		else if (compScore == -2) {
+			score -= 2;
+		}
+		else if (compScore <= -3) {
+			score -= 3;
+		}
+		
+		score = Math.max(0, score);
+		score = Math.min(5, score);
+		
 		return score;
 	}
 
