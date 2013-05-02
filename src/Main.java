@@ -36,7 +36,7 @@ public class Main {
 		*/
 		
 // ANALYSIS		
-if (false) {
+if (true) {
 		
 		// Official submission specs: 
 		// 1) read in a directory
@@ -90,7 +90,7 @@ if (false) {
 }	
 		
 // TESTING
-if (true) {
+if (false) {
 		// Create array of essay objects
 		int N_files = 20;
 		Essay[] essays = new Essay[N_files];
@@ -109,10 +109,11 @@ if (true) {
 		// Test 3a
 		//Test.testScore(essays, col3a, "Part 3a", scores);
 		//Test.testScore(essays, col1c, "Part 1c", scores);
-		Test.testScore(essays, col1d, "Part 1d", scores);
+		//Test.testScore(essays, col1d, "Part 1d", scores);
 		//Test.testScore(essays, col1a, "Part 1a", scores);
 		//Test.testScore(essays, col1b, "Part 1b", scores);
 		//Test.testScore(essays, col2b, "Part 2b", scores);
+		Test.testScore(essays, 8, "Final", scores);
 		
 		// Running POS tagger: returns an array of arrayLists.  
 		//		Elements of the array are sentences
